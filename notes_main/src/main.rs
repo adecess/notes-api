@@ -1,55 +1,34 @@
-use anyhow::Context;
-use axum::{Json, Router, http::StatusCode, response::IntoResponse, routing::get};
-use serde::Serialize;
+use axum::{Router, routing::get};
+use std::env;
+
+mod handlers;
+mod state;
+
+use handlers::health::health_check;
+use state::AppState;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() {
+    // Load environment variables from .env file
+    dotenvy::dotenv().ok();
+
+    let database_url =
+        env::var("DATABASE_URL").expect("DATABASE_URL must be set in .env file or environment");
+    println!("{}", database_url);
+
+    let app_state = AppState::new(&database_url)
+        .await
+        .expect("Failed to connect to database");
+
+    println!("Connected to database successfully!");
+
     let app = Router::new()
-        .route("/", get(hello_json))
-        .layer(tower_http::catch_panic::CatchPanicLayer::new());
+        .route("/health", get(health_check))
+        .with_state(app_state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000")
-        .await
-        .context("failed to bind TCP listener")?;
-    axum::serve(listener, app)
-        .await
-        .context("axum::serve failed")?;
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
-    Ok(())
-}
+    println!("Server running on http://localhost:3000");
 
-async fn hello_json() -> Result<(StatusCode, Json<Response>), AppError> {
-    let response = Response {
-        message: generate_message().context("failed to generate message")?,
-    };
-
-    Ok((StatusCode::OK, Json(response)))
-}
-
-/// Generates the hello world message.
-fn generate_message() -> anyhow::Result<&'static str> {
-    if rand::random() {
-        anyhow::bail!("no message for you");
-    }
-    Ok("Hello, world!")
-}
-
-#[derive(Serialize)]
-struct Response {
-    message: &'static str,
-}
-
-struct AppError(anyhow::Error);
-
-// This allows ? to automatically convert anyhow::Error to AppError
-impl From<anyhow::Error> for AppError {
-    fn from(value: anyhow::Error) -> Self {
-        Self(value)
-    }
-}
-
-impl IntoResponse for AppError {
-    fn into_response(self) -> axum::response::Response {
-        (StatusCode::INTERNAL_SERVER_ERROR, self.0.to_string()).into_response()
-    }
+    axum::serve(listener, app).await.unwrap();
 }
