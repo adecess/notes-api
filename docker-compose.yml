@@ -21,5 +21,3 @@ volumes:
 networks:
   notesapi-network:
     name: notesapi-network
-
-
