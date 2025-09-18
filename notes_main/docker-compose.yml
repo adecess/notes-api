@@ -1,0 +1,25 @@
+services:
+  postgres:
+    container_name: notesapi-db
+    image: postgres:15-alpine
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?must be set in ../.env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - notes_pg_data:/var/lib/postgresql/data
+      - ./initdb/00_from_database_url.sh:/docker-entrypoint-initdb.d/00_from_database_url.sh:ro
+    networks:
+      - notesapi-network
+
+volumes:
+  notes_pg_data:
+
+networks:
+  notesapi-network:
+    name: notesapi-network
+
+
