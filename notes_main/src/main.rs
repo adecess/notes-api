@@ -17,7 +17,6 @@ async fn main() {
 
     let database_url =
         env::var("DATABASE_URL").expect("DATABASE_URL must be set in .env file or environment");
-    println!("{}", database_url);
 
     let app_state = AppState::new(&database_url)
         .await

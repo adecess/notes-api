@@ -6,12 +6,28 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?must be set in ../.env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?must be set in .env}
     ports:
       - "5432:5432"
     volumes:
       - notes_pg_data:/var/lib/postgresql/data
       - ./initdb/00_from_database_url.sh:/docker-entrypoint-initdb.d/00_from_database_url.sh:ro
+    networks:
+      - notesapi-network
+
+  notes-api:
+    container_name: notesapi-app
+    build:
+      context: .
+      dockerfile: Dockerfile.notes-server
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL_DOCKER:?must be set in .env}
+    ports:
+      - "3000:3000"
     networks:
       - notesapi-network
 
