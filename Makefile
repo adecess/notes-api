@@ -1,26 +1,6 @@
 ###################################################################################################
 # Dev
 ###################################################################################################
-.PHONY: update_dependencies
-update_dependencies:
-	@echo "Updating Rust dependencies..."
-	cargo update
-	@echo "Dependencies updated successfully!"
-
-.PHONY: audit_dependencies
-audit_dependencies:
-	@echo "Auditing Rust dependencies for security vulnerabilities..."
-	cargo audit
-	@echo "Dependency audit completed!"
-
-.PHONY: clean
-clean:
-	@echo "Cleaning build artifacts..."
-	cargo clean
-	sudo docker-compose down --volumes --remove-orphans
-	sudo docker system prune -f
-	@echo "Clean completed!"
-
 .PHONY: dev
 dev:
 	@echo "Starting development environment..."
@@ -51,15 +31,25 @@ check:
 	@echo "Running cargo check..."
 	cargo check
 
-.PHONY: clippy
-clippy:
-	@echo "Running clippy linter..."
-	cargo clippy -- -D warnings
+.PHONY: update_dependencies
+update_dependencies:
+	@echo "Updating Rust dependencies..."
+	cargo update
+	@echo "Dependencies updated successfully!"
 
-.PHONY: format
-format:
-	@echo "Formatting code..."
-	cargo fmt
+.PHONY: audit_dependencies
+audit_dependencies:
+	@echo "Auditing Rust dependencies for security vulnerabilities..."
+	cargo audit
+	@echo "Dependency audit completed!"
+
+.PHONY: clean
+clean:
+	@echo "Cleaning build artifacts..."
+	cargo clean
+	sudo docker-compose down --volumes --remove-orphans
+	sudo docker system prune -f
+	@echo "Clean completed!"
 
 .PHONY: db_migrate
 db_migrate:
@@ -95,9 +85,6 @@ help:
 	@echo "  dev_stop         - Stop development environment"
 	@echo "  test             - Run tests"
 	@echo "  check            - Run cargo check"
-	@echo "  clippy           - Run clippy linter"
-	@echo "  format           - Format code"
-	@echo "  format_check     - Check code formatting"
 	@echo ""
 	@echo "Dependencies:"
 	@echo "  update_dependencies - Update Rust dependencies"
@@ -107,16 +94,11 @@ help:
 	@echo "Build:"
 	@echo "  build            - Build Rust application"
 	@echo "  docker_build     - Build Docker image"
-	@echo "  docker_run       - Run Docker container"
-	@echo "  production_build - Build for production"
-	@echo "  production_deploy - Deploy to production"
 	@echo ""
 	@echo "Database:"
 	@echo "  db_migrate       - Run database migrations"
-	@echo "  db_reset         - Reset database"
-	@echo "  db_shell         - Connect to database shell"
-	@echo "  db_backup        - Create database backup"
-	@echo "  db_restore       - Restore database from backup"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  help             - Show this help message"
+
+
