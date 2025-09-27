@@ -49,8 +49,8 @@ pub struct UserResponse {
     pub updated_at: DateTime<Utc>,
 }
 
-impl From<crate::models::User> for UserResponse {
-    fn from(user: crate::models::User) -> Self {
+impl From<services::User> for UserResponse {
+    fn from(user: services::User) -> Self {
         Self {
             id: user.id,
             username: user.username,

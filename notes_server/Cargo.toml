@@ -30,3 +30,6 @@ dotenvy = "0.15"
 
 # Validation
 validator = { version = "0.20.0", features = ["derive"] }
+
+# Services (business logic)
+services = { path = "../services" }

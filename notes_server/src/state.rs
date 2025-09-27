@@ -1,4 +1,4 @@
-use crate::repositories::UserRepository;
+use services::UserRepository;
 use sqlx::PgPool;
 
 #[derive(Clone)]

@@ -977,6 +977,7 @@ dependencies = [
  "dotenvy",
  "serde",
  "serde_json",
+ "services",
  "sqlx",
  "tokio",
  "uuid",
@@ -1404,6 +1405,16 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "services"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "sqlx",
+ "uuid",
 ]
 
 [[package]]
