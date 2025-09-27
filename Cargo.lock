@@ -969,7 +969,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "notes_main"
+name = "notes_server"
 version = "0.1.0"
 dependencies = [
  "axum",

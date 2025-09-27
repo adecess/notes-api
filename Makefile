@@ -59,7 +59,7 @@ clean:
 .PHONY: db_migrate
 db_migrate:
 	@echo "Running database migrations..."
-	cargo run --bin notes_main -- migrate
+	cargo run --bin notes_server -- migrate
 
 ###################################################################################################
 # Build

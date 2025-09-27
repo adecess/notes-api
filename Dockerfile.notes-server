@@ -6,18 +6,18 @@ WORKDIR /app
 
 # Cache dependencies first
 COPY Cargo.toml Cargo.lock ./
-COPY notes_main/Cargo.toml notes_main/Cargo.toml
+COPY notes_server/Cargo.toml notes_server/Cargo.toml
 
-# Create a dummy main to cache deps for notes_main
-RUN mkdir -p notes_main/src \
-    && echo "fn main() { println!(\"build-placeholder\"); }" > notes_main/src/main.rs
+# Create a dummy main to cache deps for notes_server
+RUN mkdir -p notes_server/src \
+    && echo "fn main() { println!(\"build-placeholder\"); }" > notes_server/src/main.rs
 
 # Build to warm the cache (ignore build failure if features differ later)
-RUN cargo build --release -p notes_main || true
+RUN cargo build --release -p notes_server || true
 
 # Now copy the full workspace and build the real binary
 COPY . .
-RUN cargo build --release -p notes_main
+RUN cargo build --release -p notes_server
 
 ############################################
 # Runtime image: minimal Debian with CA certs #
@@ -32,7 +32,7 @@ RUN apt-get update \
 WORKDIR /app
 
 # Copy the compiled binary
-COPY --from=builder /app/target/release/notes_main /usr/local/bin/notes-api
+COPY --from=builder /app/target/release/notes_server /usr/local/bin/notes-api
 
 ENV RUST_LOG=info
 EXPOSE 3000

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["notes_main"]
+members = ["notes_server"]
 
 [workspace.package]
 edition = "2024"
