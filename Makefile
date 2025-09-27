@@ -4,10 +4,15 @@
 .PHONY: dev
 dev:
 	@echo "Starting development environment..."
+	sudo docker-compose up
+
+.PHONY: dev_build
+dev_build:
+	@echo "Starting development environment..."
 	sudo docker-compose up --build
 
-.PHONY: dev_detached
-dev_detached:
+.PHONY: dev_build_detached
+dev_build_detached:
 	@echo "Starting development environment in background..."
 	sudo docker-compose up --build -d
 
