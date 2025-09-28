@@ -8,7 +8,7 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY notes_server/Cargo.toml notes_server/Cargo.toml
 
-# Create a dummy main to cache deps for notes_server
+# Create a dummy main to cache dependencies for notes_server
 RUN mkdir -p notes_server/src \
     && echo "fn main() { println!(\"build-placeholder\"); }" > notes_server/src/main.rs
 
