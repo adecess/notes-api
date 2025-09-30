@@ -26,6 +26,7 @@ services:
       - .env
     environment:
       DATABASE_URL: ${DATABASE_URL_DOCKER:?must be set in .env}
+      JWT_SECRET: ${JWT_SECRET:?must be set in .env}
     ports:
       - "3000:3000"
     networks:

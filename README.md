@@ -2,7 +2,7 @@
 
 A Rust web API built with [Axum](https://github.com/tokio-rs/axum) and [SQLx](https://github.com/launchbadge/sqlx) for learning modern Rust web development patterns.
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -17,7 +17,7 @@ A Rust web API built with [Axum](https://github.com/tokio-rs/axum) and [SQLx](ht
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 notes-api/
@@ -42,27 +42,32 @@ notes-api/
 └── README.md
 ```
 
-## 🏃‍♂️ Getting Started
+## Getting Started
 
 ### Prerequisites
+
 - Rust 1.70+ (2024 edition)
 - Docker & Docker Compose
 - PostgreSQL client (optional)
 
 ### 1. Clone and Setup
+
 ```bash
 git clone <your-repo>
 cd notes-api
 ```
 
 ### 2. Environment Configuration
+
 Create a `.env` file in the project root:
+
 ```env
 DATABASE_URL=postgres://notes_user:your_notes_password@localhost:5432/notes_db
 POSTGRES_PASSWORD=your_postgres_password
 ```
 
 ### 3. Start Development Environment
+
 ```bash
 # Start PostgreSQL database
 docker-compose up -d
@@ -73,10 +78,8 @@ cargo run
 ```
 
 ### 4. Test the API
+
 ```bash
 # Health check
 curl http://localhost:3000/health
-
-# Expected response:
-# {"status":"ok","database":"connected"}
 ```

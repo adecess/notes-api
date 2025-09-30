@@ -1,7 +1,8 @@
+use axum::extract::FromRef;
 use services::UserRepository;
 use sqlx::PgPool;
 
-#[derive(Clone)]
+#[derive(Clone, FromRef)]
 pub struct AppState {
     pub db: PgPool,
     pub user_repository: UserRepository,
