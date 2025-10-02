@@ -1,5 +1,7 @@
+use super::traits::UserRepositoryTrait;
 use crate::models::User;
-use sqlx::{PgPool, Row};
+use async_trait::async_trait;
+use sqlx::PgPool;
 use uuid::Uuid;
 
 #[derive(Clone)]
@@ -11,8 +13,11 @@ impl UserRepository {
     pub fn new(db: PgPool) -> Self {
         Self { db }
     }
+}
 
-    pub async fn create(
+#[async_trait]
+impl UserRepositoryTrait for UserRepository {
+    async fn create(
         &self,
         username: &str,
         email: &str,
@@ -35,7 +40,7 @@ impl UserRepository {
         Ok(user)
     }
 
-    pub async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, sqlx::Error> {
+    async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, sqlx::Error> {
         let user = sqlx::query_as::<_, User>(
             r#"
             SELECT id, username, email, password_hash, bio, image,
@@ -51,7 +56,7 @@ impl UserRepository {
         Ok(user)
     }
 
-    pub async fn find_by_email(&self, email: &str) -> Result<Option<User>, sqlx::Error> {
+    async fn find_by_email(&self, email: &str) -> Result<Option<User>, sqlx::Error> {
         let user = sqlx::query_as::<_, User>(
             r#"
             SELECT id, username, email, password_hash, bio, image,
@@ -67,7 +72,7 @@ impl UserRepository {
         Ok(user)
     }
 
-    pub async fn find_by_username(&self, username: &str) -> Result<Option<User>, sqlx::Error> {
+    async fn find_by_username(&self, username: &str) -> Result<Option<User>, sqlx::Error> {
         let user = sqlx::query_as::<_, User>(
             r#"
             SELECT id, username, email, password_hash, bio, image,
@@ -83,7 +88,7 @@ impl UserRepository {
         Ok(user)
     }
 
-    pub async fn update(
+    async fn update(
         &self,
         id: Uuid,
         username: Option<&str>,
