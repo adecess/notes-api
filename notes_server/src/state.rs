@@ -1,12 +1,16 @@
 use axum::extract::FromRef;
-use services::{UserRepository, repositories::UserRepositoryTrait};
+use services::{
+    AuthService, AuthServiceTrait, UserRepository, UserService, UserServiceTrait,
+    repositories::UserRepositoryTrait,
+};
 use sqlx::PgPool;
 use std::sync::Arc;
 
 #[derive(Clone, FromRef)]
 pub struct AppState {
     pub db: PgPool,
-    pub user_repository: Arc<dyn UserRepositoryTrait>,
+    pub user_service: Arc<dyn UserServiceTrait>,
+    pub auth_service: Arc<dyn AuthServiceTrait>,
 }
 
 impl AppState {
@@ -20,9 +24,16 @@ impl AppState {
         let user_repository: Arc<dyn UserRepositoryTrait> =
             Arc::new(UserRepository::new(db.clone()));
 
+        let user_service: Arc<dyn UserServiceTrait> = Arc::new(UserService::new(user_repository));
+
+        let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+        let auth_service: Arc<dyn AuthServiceTrait> =
+            Arc::new(AuthService::new(user_service.clone(), jwt_secret));
+
         Ok(Self {
             db,
-            user_repository,
+            user_service,
+            auth_service,
         })
     }
 }

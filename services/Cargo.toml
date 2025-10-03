@@ -7,6 +7,10 @@ edition.workspace = true
 # Async
 async-trait = "0.1"
 
+# Authorization
+bcrypt = "0.15"
+jsonwebtoken = "9.0"
+
 # Database
 sqlx = { version = "0.8", features = [
     "runtime-tokio-rustls",
