@@ -15,6 +15,8 @@ use handlers::{
 };
 use state::AppState;
 
+use crate::handlers::note::create_note;
+
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().ok();
@@ -32,6 +34,7 @@ async fn main() {
         .route("/api/users", post(register))
         .route("/api/users/login", post(login))
         .route("/api/user", get(current_user))
+        .route("/api/notes", post(create_note))
         .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

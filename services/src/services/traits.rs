@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::User;
+use crate::{User, models::Note};
 
 #[async_trait]
 pub trait UserServiceTrait: Send + Sync {
@@ -59,4 +59,27 @@ pub trait AuthServiceTrait: Send + Sync {
     async fn get_current_user(&self, user: User) -> Result<(User, String), AuthError>;
 
     async fn validate_token(&self, token: &str) -> Result<uuid::Uuid, AuthError>;
+}
+
+#[async_trait]
+pub trait NoteServiceTrait: Send + Sync {
+    async fn create_note(
+        &self,
+        user_id: Uuid,
+        title: &str,
+        content: &str,
+    ) -> Result<Note, sqlx::Error>;
+
+    async fn find_note_by_id(&self, note_id: Uuid) -> Result<Option<Note>, sqlx::Error>;
+
+    async fn find_notes_by_user_id(&self, user_id: Uuid) -> Result<Vec<Note>, sqlx::Error>;
+
+    async fn update_note(
+        &self,
+        note_id: Uuid,
+        title: Option<&str>,
+        content: Option<&str>,
+    ) -> Result<Option<Note>, sqlx::Error>;
+
+    async fn delete_note(&self, note_id: Uuid) -> Result<Option<Note>, sqlx::Error>;
 }

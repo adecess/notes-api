@@ -90,7 +90,7 @@ impl UserRepositoryTrait for UserRepository {
 
     async fn update(
         &self,
-        id: Uuid,
+        user_id: Uuid,
         username: Option<&str>,
         email: Option<&str>,
         bio: Option<&str>,
@@ -108,7 +108,7 @@ impl UserRepositoryTrait for UserRepository {
                       created_at, updated_at
             "#,
         )
-        .bind(id)
+        .bind(user_id)
         .bind(username)
         .bind(email)
         .bind(bio)

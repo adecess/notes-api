@@ -1,7 +1,8 @@
 use axum::extract::FromRef;
 use services::{
     AuthService, AuthServiceTrait, UserRepository, UserService, UserServiceTrait,
-    repositories::UserRepositoryTrait,
+    repositories::{NoteRepository, UserRepositoryTrait, traits::NoteRepositoryTrait},
+    services::{note_service::NoteService, traits::NoteServiceTrait},
 };
 use sqlx::PgPool;
 use std::sync::Arc;
@@ -11,6 +12,7 @@ pub struct AppState {
     pub db: PgPool,
     pub user_service: Arc<dyn UserServiceTrait>,
     pub auth_service: Arc<dyn AuthServiceTrait>,
+    pub note_service: Arc<dyn NoteServiceTrait>,
 }
 
 impl AppState {
@@ -30,10 +32,16 @@ impl AppState {
         let auth_service: Arc<dyn AuthServiceTrait> =
             Arc::new(AuthService::new(user_service.clone(), jwt_secret));
 
+        let note_repository: Arc<dyn NoteRepositoryTrait> =
+            Arc::new(NoteRepository::new(db.clone()));
+
+        let note_service: Arc<dyn NoteServiceTrait> = Arc::new(NoteService::new(note_repository));
+
         Ok(Self {
             db,
             user_service,
             auth_service,
+            note_service,
         })
     }
 }

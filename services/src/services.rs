@@ -1,4 +1,5 @@
 pub mod auth_service;
+pub mod note_service;
 pub mod traits;
 pub mod user_service;
 
