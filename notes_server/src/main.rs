@@ -1,21 +1,17 @@
-use axum::{
-    Router,
-    routing::{get, post},
-};
+use axum::Router;
 use std::env;
 
 mod auth;
 mod handlers;
+mod routes;
 mod schemas;
 mod state;
-
-use handlers::{
-    auth::{current_user, login, register},
-    health::health_check,
-};
 use state::AppState;
 
-use crate::handlers::note::create_note;
+use crate::routes::{
+    auth_routes::auth_routes, health_routes::health_routes, note_routes::note_routes,
+    user_routes::user_routes,
+};
 
 #[tokio::main]
 async fn main() {
@@ -30,11 +26,14 @@ async fn main() {
     println!("Connected to database successfully!");
 
     let app = Router::new()
-        .route("/health", get(health_check))
-        .route("/api/users", post(register))
-        .route("/api/users/login", post(login))
-        .route("/api/user", get(current_user))
-        .route("/api/notes", post(create_note))
+        .nest(
+            "/api",
+            Router::new()
+                .nest("/health", health_routes())
+                .nest("/auth", auth_routes())
+                .nest("/users", user_routes())
+                .nest("/notes", note_routes()),
+        )
         .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
