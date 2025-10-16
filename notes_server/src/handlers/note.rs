@@ -1,4 +1,9 @@
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{
+    Json,
+    extract::{Path, State},
+    http::StatusCode,
+};
+use uuid::Uuid;
 use validator::Validate;
 
 use crate::{
@@ -12,18 +17,36 @@ pub async fn create_note(
     State(state): State<AppState>,
     Json(payload): Json<CreateNoteRequest>,
 ) -> Result<Json<NoteResponse>, StatusCode> {
-    // Validate input data
     payload
         .note
         .validate()
         .map_err(|_| StatusCode::BAD_REQUEST)?;
 
-    // Call note service
     let note = state
         .note_service
         .create_note(user.id, &payload.note.title, &payload.note.content)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let note_data = NoteData::from_note(note);
+    let response = NoteResponse { note: note_data };
+
+    Ok(Json(response))
+}
+
+pub async fn find_note_by_id(
+    RequireAuth(user): RequireAuth,
+    State(state): State<AppState>,
+    Path(note_id): Path<Uuid>,
+) -> Result<Json<NoteResponse>, StatusCode> {
+    let Some(note) = state
+        .note_service
+        .find_note_by_id(note_id, user.id)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+    else {
+        return Err(StatusCode::NOT_FOUND);
+    };
 
     // Build response
     let note_data = NoteData::from_note(note);

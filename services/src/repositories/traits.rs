@@ -32,9 +32,13 @@ pub trait UserRepositoryTrait: Send + Sync {
 pub trait NoteRepositoryTrait: Send + Sync {
     async fn create(&self, user_id: Uuid, title: &str, content: &str) -> Result<Note, SqlxError>;
 
-    async fn find_by_id(&self, note_id: Uuid) -> Result<Option<Note>, SqlxError>;
+    async fn find_note_by_id(
+        &self,
+        note_id: Uuid,
+        user_id: Uuid,
+    ) -> Result<Option<Note>, SqlxError>;
 
-    async fn find_notes_by_user_id(&self, user_id: Uuid) -> Result<Vec<Note>, SqlxError>;
+    async fn find_all_notes(&self, user_id: Uuid) -> Result<Vec<Note>, SqlxError>;
 
     async fn update(
         &self,

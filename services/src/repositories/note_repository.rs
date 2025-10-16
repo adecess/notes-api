@@ -34,22 +34,28 @@ impl NoteRepositoryTrait for NoteRepository {
         Ok(note)
     }
 
-    async fn find_by_id(&self, id: Uuid) -> Result<Option<Note>, sqlx::Error> {
+    async fn find_note_by_id(
+        &self,
+        note_id: Uuid,
+        user_id: Uuid,
+    ) -> Result<Option<Note>, sqlx::Error> {
         let user = sqlx::query_as::<_, Note>(
             r#"
             SELECT id, user_id, title, content, created_at, updated_at
             FROM notes
             WHERE id = $1
+            AND user_id = $2
             "#,
         )
-        .bind(id)
+        .bind(note_id)
+        .bind(user_id)
         .fetch_optional(&self.db)
         .await?;
 
         Ok(user)
     }
 
-    async fn find_notes_by_user_id(&self, user_id: Uuid) -> Result<Vec<Note>, sqlx::Error> {
+    async fn find_all_notes(&self, user_id: Uuid) -> Result<Vec<Note>, sqlx::Error> {
         let notes = sqlx::query_as::<_, Note>(
             r#"
             SELECT id, user_id, title, content, created_at, updated_at

@@ -24,12 +24,16 @@ impl NoteServiceTrait for NoteService {
         self.note_repository.create(user_id, title, content).await
     }
 
-    async fn find_note_by_id(&self, note_id: Uuid) -> Result<Option<Note>, sqlx::Error> {
-        self.note_repository.find_by_id(note_id).await
+    async fn find_note_by_id(
+        &self,
+        note_id: Uuid,
+        user_id: Uuid,
+    ) -> Result<Option<Note>, sqlx::Error> {
+        self.note_repository.find_note_by_id(note_id, user_id).await
     }
 
     async fn find_notes_by_user_id(&self, user_id: Uuid) -> Result<Vec<Note>, sqlx::Error> {
-        self.note_repository.find_notes_by_user_id(user_id).await
+        self.note_repository.find_all_notes(user_id).await
     }
 
     async fn update_note(

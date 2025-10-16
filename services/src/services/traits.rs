@@ -70,7 +70,11 @@ pub trait NoteServiceTrait: Send + Sync {
         content: &str,
     ) -> Result<Note, sqlx::Error>;
 
-    async fn find_note_by_id(&self, note_id: Uuid) -> Result<Option<Note>, sqlx::Error>;
+    async fn find_note_by_id(
+        &self,
+        note_id: Uuid,
+        user_id: Uuid,
+    ) -> Result<Option<Note>, sqlx::Error>;
 
     async fn find_notes_by_user_id(&self, user_id: Uuid) -> Result<Vec<Note>, sqlx::Error>;
 
