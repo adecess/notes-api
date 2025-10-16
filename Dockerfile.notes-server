@@ -7,16 +7,20 @@ WORKDIR /app
 # Cache dependencies first
 COPY Cargo.toml Cargo.lock ./
 COPY notes_server/Cargo.toml notes_server/Cargo.toml
+COPY services/Cargo.toml services/Cargo.toml
 
-# Create a dummy main to cache dependencies for notes_server
+# Dummy build to cache dependencies
 RUN mkdir -p notes_server/src \
     && echo "fn main() { println!(\"build-placeholder\"); }" > notes_server/src/main.rs
-
 # Build to warm the cache (ignore build failure if features differ later)
 RUN cargo build --release -p notes_server || true
 
-# Now copy the full workspace and build the real binary
-COPY . .
+# Copy actual source
+COPY notes_server/src notes_server/src
+COPY notes_server/migrations notes_server/migrations
+COPY services/src services/src
+
+# Build real binary
 RUN cargo build --release -p notes_server
 
 ############################################
