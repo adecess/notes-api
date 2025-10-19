@@ -6,14 +6,14 @@ A Rust web API built with [Axum](https://github.com/tokio-rs/axum) and [SQLx](ht
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Handlers      │    │   Repositories  │    │     Models      │
-│  (HTTP Layer)   │───▶│ (Data Access)   │───▶│ (Data Types)    │
+│   Handlers      │    │   Services      │    │   Repositories  │
+│  (HTTP Layer)   │───▶│ (Business Logic)│───▶│ (Data Access)   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          ▼                       ▼                       ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   AppState      │    │   Database      │    │   Schemas       │
-│ (Shared State)  │    │   (PostgreSQL)  │    │ (API Contracts) │
+│   AppState      │    │   Database      │    │     Models      │
+│ (Shared State)  │    │   (PostgreSQL)  │    │ (Data Types)    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -26,24 +26,38 @@ notes-api/
 │   │   ├── main.rs            # Application entry point
 │   │   ├── state.rs           # Shared application state
 │   │   ├── handlers/          # HTTP request handlers
-│   │   │   └── health.rs      # Health check endpoint
-│   │   ├── auth/              # Auth (JWT, hashing, middleware)
-│   │   │   ├── jwt.rs
-│   │   │   ├── middleware.rs
-│   │   │   └── password.rs
+│   │   │   ├── auth.rs        # Authentication endpoints
+│   │   │   ├── health.rs      # Health check endpoint
+│   │   │   └── notes.rs       # Note management endpoints
+│   │   ├── routes/            # Route definitions
+│   │   │   ├── auth_routes.rs
+│   │   │   ├── health_routes.rs
+│   │   │   ├── note_routes.rs
+│   │   │   └── user_routes.rs
+│   │   ├── auth/              # Auth middleware and utilities
+│   │   │   └── middleware.rs  # JWT middleware
 │   │   └── schemas/           # API request/response schemas
 │   │       ├── auth_schemas.rs
 │   │       └── user_schemas.rs
 │   ├── migrations/            # Database migrations
-│   │   └── 20250918111144_create_users_table.sql
+│   │   ├── 20250918111144_create_users_table.sql
+│   │   └── 20251003163320_create_notes_table.sql
 │   └── Cargo.toml
-├── services/                   # Business logic crate (models, repositories)
+├── services/                   # Business logic crate (models, repositories, services)
 │   ├── src/
 │   │   ├── lib.rs
-│   │   ├── models/
-│   │   │   └── user.rs
-│   │   └── repositories/
-│   │       └── user_repository.rs
+│   │   ├── models/            # Data models
+│   │   │   ├── user.rs
+│   │   │   └── note.rs
+│   │   ├── repositories/      # Data access layer
+│   │   │   ├── traits.rs      # Repository trait definitions
+│   │   │   ├── user_repository.rs
+│   │   │   └── note_repository.rs
+│   │   └── services/          # Business logic layer
+│   │       ├── traits.rs      # Service trait definitions
+│   │       ├── auth_service.rs
+│   │       ├── user_service.rs
+│   │       └── note_service.rs
 │   └── Cargo.toml
 ├── initdb/                    # Database initialization
 │   └── 00_from_database_url.sh
@@ -63,7 +77,7 @@ notes-api/
 ### 1. Clone and Setup
 
 ```bash
-git clone <your-repo>
+git clone https://github.com/adecess/notes-api.git
 cd notes-api
 ```
 
@@ -118,5 +132,25 @@ curl -X POST http://localhost:3000/api/users/login \
 
 # Get current user (replace TOKEN with the JWT from login)
 curl http://localhost:3000/api/user \
+  -H "Authorization: Bearer TOKEN"
+
+# Create a note (replace TOKEN with the JWT from login)
+curl -X POST http://localhost:3000/api/notes \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer TOKEN" \
+  -d '{"note": {"title": "My First Note", "content": "This is the content of my note."}}'
+
+# Get all notes for the current user
+curl http://localhost:3000/api/notes \
+  -H "Authorization: Bearer TOKEN"
+
+# Update a note (replace NOTE_ID with actual note ID)
+curl -X PUT http://localhost:3000/api/notes/NOTE_ID \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer TOKEN" \
+  -d '{"note": {"title": "Updated Title", "content": "Updated content."}}'
+
+# Delete a note (replace NOTE_ID with actual note ID)
+curl -X DELETE http://localhost:3000/api/notes/NOTE_ID \
   -H "Authorization: Bearer TOKEN"
 ```
