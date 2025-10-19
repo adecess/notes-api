@@ -59,7 +59,7 @@ impl NoteRepositoryTrait for NoteRepository {
         let notes = sqlx::query_as::<_, Note>(
             r#"
             SELECT id, user_id, title, content, created_at, updated_at
-            FROM users
+            FROM notes
             WHERE user_id = $1
             "#,
         )

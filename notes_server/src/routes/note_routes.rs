@@ -4,7 +4,7 @@ use axum::{
 };
 
 use crate::{
-    handlers::note::{create_note, find_note_by_id},
+    handlers::note::{create_note, find_all_notes, find_note_by_id},
     state::AppState,
 };
 
@@ -12,5 +12,5 @@ pub fn note_routes() -> Router<AppState> {
     Router::new()
         .route("/", post(create_note))
         .route("/{id}", get(find_note_by_id))
-    // .route("/me", get(get_current_user_notes))
+        .route("/me", get(find_all_notes))
 }

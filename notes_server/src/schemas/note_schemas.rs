@@ -38,3 +38,16 @@ impl NoteData {
         }
     }
 }
+
+#[derive(Debug, Serialize)]
+pub struct NoteListResponse {
+    pub notes: Vec<NoteData>,
+}
+
+impl NoteListResponse {
+    pub fn from_notes(notes: Vec<Note>) -> Self {
+        Self {
+            notes: notes.into_iter().map(NoteData::from_note).collect(),
+        }
+    }
+}
