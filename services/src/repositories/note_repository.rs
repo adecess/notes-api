@@ -73,19 +73,22 @@ impl NoteRepositoryTrait for NoteRepository {
     async fn update(
         &self,
         note_id: Uuid,
+        user_id: Uuid,
         title: Option<&str>,
         content: Option<&str>,
     ) -> Result<Option<Note>, sqlx::Error> {
         let note = sqlx::query_as::<_, Note>(
             r#"
             UPDATE notes
-            SET title = COALESCE($2, title),
-                content = COALESCE($3, content),
+            SET title = COALESCE($3, title),
+                content = COALESCE($4, content)
             WHERE id = $1
+            AND user_id = $2
             RETURNING id, user_id, title, content, created_at, updated_at
             "#,
         )
         .bind(note_id)
+        .bind(user_id)
         .bind(title)
         .bind(content)
         .fetch_optional(&self.db)

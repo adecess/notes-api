@@ -17,6 +17,20 @@ pub struct CreateNoteData {
     pub content: String,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct UpdateNoteRequest {
+    pub note: UpdateNoteData,
+}
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct UpdateNoteData {
+    #[validate(length(max = 50, message = "Title cannot exceed 50 characters"))]
+    pub title: Option<String>,
+
+    #[validate(length(max = 500, message = "Content cannot exceed 500 characters"))]
+    pub content: Option<String>,
+}
+
 #[derive(Debug, Serialize)]
 pub struct NoteResponse {
     pub note: NoteData,
@@ -24,6 +38,7 @@ pub struct NoteResponse {
 
 #[derive(Debug, Serialize)]
 pub struct NoteData {
+    pub note_id: Uuid,
     pub user_id: Uuid,
     pub title: String,
     pub content: String,
@@ -32,6 +47,7 @@ pub struct NoteData {
 impl NoteData {
     pub fn from_note(note: Note) -> Self {
         Self {
+            note_id: note.id,
             user_id: note.user_id,
             title: note.title,
             content: note.content,

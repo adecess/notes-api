@@ -43,6 +43,7 @@ pub trait NoteRepositoryTrait: Send + Sync {
     async fn update(
         &self,
         note_id: Uuid,
+        user_id: Uuid,
         title: Option<&str>,
         content: Option<&str>,
     ) -> Result<Option<Note>, SqlxError>;

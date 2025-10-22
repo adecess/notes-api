@@ -81,6 +81,7 @@ pub trait NoteServiceTrait: Send + Sync {
     async fn update_note(
         &self,
         note_id: Uuid,
+        user_id: Uuid,
         title: Option<&str>,
         content: Option<&str>,
     ) -> Result<Option<Note>, sqlx::Error>;

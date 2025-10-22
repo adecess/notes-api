@@ -8,7 +8,9 @@ use validator::Validate;
 
 use crate::{
     auth::middleware::RequireAuth,
-    schemas::note_schemas::{CreateNoteRequest, NoteData, NoteListResponse, NoteResponse},
+    schemas::note_schemas::{
+        CreateNoteRequest, NoteData, NoteListResponse, NoteResponse, UpdateNoteRequest,
+    },
     state::AppState,
 };
 
@@ -67,4 +69,30 @@ pub async fn find_all_notes(
     let note_list_response = NoteListResponse::from_notes(notes);
 
     Ok(Json(note_list_response))
+}
+
+pub async fn update_note(
+    RequireAuth(user): RequireAuth,
+    State(state): State<AppState>,
+    Path(note_id): Path<Uuid>,
+    Json(payload): Json<UpdateNoteRequest>,
+) -> Result<Json<NoteResponse>, StatusCode> {
+    let Some(updated_note) = state
+        .note_service
+        .update_note(
+            note_id,
+            user.id,
+            payload.note.title.as_deref(),
+            payload.note.content.as_deref(),
+        )
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+    else {
+        return Err(StatusCode::NOT_FOUND);
+    };
+
+    let note_data = NoteData::from_note(updated_note);
+    let response = NoteResponse { note: note_data };
+
+    Ok(Json(response))
 }

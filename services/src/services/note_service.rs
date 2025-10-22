@@ -39,10 +39,13 @@ impl NoteServiceTrait for NoteService {
     async fn update_note(
         &self,
         note_id: Uuid,
+        user_id: Uuid,
         title: Option<&str>,
         content: Option<&str>,
     ) -> Result<Option<Note>, sqlx::Error> {
-        self.note_repository.update(note_id, title, content).await
+        self.note_repository
+            .update(note_id, user_id, title, content)
+            .await
     }
 
     async fn delete_note(&self, note_id: Uuid) -> Result<Option<Note>, sqlx::Error> {
