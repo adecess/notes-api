@@ -4,27 +4,27 @@
 .PHONY: dev
 dev:
 	@echo "Starting development environment..."
-	sudo docker-compose up
+	docker compose up
 
 .PHONY: dev_build
 dev_build:
 	@echo "Starting development environment..."
-	sudo docker-compose up --build
+	docker compose up --build
 
 .PHONY: dev_build_detached
 dev_build_detached:
 	@echo "Starting development environment in background..."
-	sudo docker-compose up --build -d
+	docker compose up --build -d
 
 .PHONY: dev_logs
 dev_logs:
 	@echo "Showing development logs..."
-	sudo docker-compose logs -f
+	docker compose logs -f
 
 .PHONY: dev_stop
 dev_stop:
 	@echo "Stopping development environment..."
-	sudo docker-compose down
+	docker compose down
 
 .PHONY: test
 test:
@@ -52,8 +52,8 @@ audit_dependencies:
 clean:
 	@echo "Cleaning build artifacts..."
 	cargo clean
-	sudo docker-compose down --volumes --remove-orphans
-	sudo docker system prune -f
+	docker compose down --volumes --remove-orphans
+	docker system prune -f
 	@echo "Clean completed!"
 
 .PHONY: db_migrate
@@ -73,7 +73,7 @@ build:
 .PHONY: docker_build
 docker_build:
 	@echo "Building Docker image..."
-	sudo docker build -f Dockerfile.notes-server -t notes-api:latest .
+	docker build -f Dockerfile.notes-server -t notes-api:latest .
 	@echo "Docker build completed!"
 
 ###################################################################################################
